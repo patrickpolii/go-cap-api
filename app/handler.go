@@ -3,7 +3,7 @@ package app
 import (
 	"capi/service"
 	"encoding/json"
-	"encoding/xml"
+	"fmt"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -13,14 +13,16 @@ type CustomerHandler struct {
 	service service.CustomerService
 }
 
-func (ch *CustomerHandler) getAllCustomers(w http.ResponseWriter, r *http.Request) {
+func (ch *CustomerHandler) GetAllCustomers(w http.ResponseWriter, r *http.Request) {
 	// fmt.Fprint(w, "get customer endpoint\n")
+	customerStatus := r.URL.Query().Get("status")
+	fmt.Println("customer status", customerStatus)
 
-	customers, _ := ch.service.GetAllCustomer()
+	customers, err := ch.service.GetAllCustomer(customerStatus)
 
-	if r.Header.Get("Content-Type") == "application/xml" {
-		w.Header().Add("Content-Type", "application/xml")
-		xml.NewEncoder(w).Encode(customers)
+	if err != nil {
+		writeResponse(w, err.Code, err.AsMessage())
+		return
 	} else {
 		w.Header().Add("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(customers)
@@ -189,15 +191,15 @@ func writeResponse(w http.ResponseWriter, code int, data interface{}) {
 // 		return
 // 	}
 
-// 	for customerIndex, data := range customers {
-// 		if data.ID == id {
-// 			var newCust Customer
-// 			json.NewDecoder(r.Body).Decode(&newCust)
-// 			customers = append(customers[:customerIndex], customers[customerIndex+1:]...)
-// 			w.WriteHeader(http.StatusOK)
-// 			fmt.Fprintln(w, "customer data deleted")
-// 			return
-// 		}
+// for customerIndex, data := range customers {
+// 	if data.ID == id {
+// 		var newCust Customer
+// 		json.NewDecoder(r.Body).Decode(&newCust)
+// 		customers = append(customers[:customerIndex], customers[customerIndex+1:]...)
+// 		w.WriteHeader(http.StatusOK)
+// 		fmt.Fprintln(w, "customer data deleted")
+// 		return
 // 	}
+// }
 
 // }
