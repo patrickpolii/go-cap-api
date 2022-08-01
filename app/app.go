@@ -21,7 +21,7 @@ func Start() {
 	mux.HandleFunc("/customers", ch.GetAllCustomers).Methods(http.MethodGet)
 	// mux.HandleFunc("/customers", addCustomer).Methods(http.MethodPost)
 
-	mux.HandleFunc("/customers/{customer_id:[0-9]+}", ch.getCustomerByID).Methods(http.MethodGet)
+	mux.HandleFunc("/customers/{customer_id:[0-9]+}", ch.GetCustomerByID).Methods(http.MethodGet)
 	// mux.HandleFunc("/customers/{customer_id:[0-9]+}", updateCustomer).Methods(http.MethodPut)
 
 	// * starting the server

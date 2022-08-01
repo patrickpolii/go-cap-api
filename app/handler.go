@@ -29,7 +29,7 @@ func (ch *CustomerHandler) GetAllCustomers(w http.ResponseWriter, r *http.Reques
 	}
 }
 
-func (ch *CustomerHandler) getCustomerByID(w http.ResponseWriter, r *http.Request) {
+func (ch *CustomerHandler) GetCustomerByID(w http.ResponseWriter, r *http.Request) {
 
 	// * get route variable
 	vars := mux.Vars(r)
