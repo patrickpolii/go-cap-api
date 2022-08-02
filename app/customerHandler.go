@@ -3,35 +3,32 @@ package app
 import (
 	"capi/service"
 	"encoding/json"
-	"fmt"
 	"net/http"
 
 	"github.com/gorilla/mux"
 )
 
-type CustomerHandler struct {
+type CustomerHandlers struct {
 	service service.CustomerService
 }
 
-func (ch *CustomerHandler) GetAllCustomers(w http.ResponseWriter, r *http.Request) {
-	// fmt.Fprint(w, "get customer endpoint\n")
-	customerStatus := r.URL.Query().Get("status")
-	fmt.Println("customer status", customerStatus)
+func (ch *CustomerHandlers) getAllCustomers(w http.ResponseWriter, r *http.Request) {
 
-	customers, err := ch.service.GetAllCustomer(customerStatus)
+	// /customers?status=xxxx
+	status := r.URL.Query().Get("status")
+
+	customers, err := ch.service.GetAllCustomer(status)
 
 	if err != nil {
 		writeResponse(w, err.Code, err.AsMessage())
 		return
-	} else {
-		w.Header().Add("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(customers)
 	}
+
+	writeResponse(w, http.StatusOK, customers)
+
 }
 
-func (ch *CustomerHandler) GetCustomerByID(w http.ResponseWriter, r *http.Request) {
-
-	// * get route variable
+func (ch *CustomerHandlers) getCustomerByID(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 
 	customerID := vars["customer_id"]
@@ -42,13 +39,13 @@ func (ch *CustomerHandler) GetCustomerByID(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	// * return customer data
 	writeResponse(w, http.StatusOK, customer)
 }
 
 func writeResponse(w http.ResponseWriter, code int, data interface{}) {
 	w.Header().Add("Content-Type", "application/json")
 	w.WriteHeader(code)
+
 	if err := json.NewEncoder(w).Encode(data); err != nil {
 		panic(err)
 	}
